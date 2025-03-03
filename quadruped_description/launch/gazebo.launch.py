@@ -48,10 +48,10 @@ def generate_launch_description():
                 'gzserver.launch.py'
             ])
         ]),
-        # launch_arguments={
-        #     # "world": world_file,
-        #     # "pause": True,
-        #     }.items(),
+        launch_arguments={
+            # "world": world_file,
+            "pause": "true",
+            }.items(),
     )
 
     gazebo_client = IncludeLaunchDescription(
@@ -83,7 +83,7 @@ def generate_launch_description():
             '-topic', 'robot_description',
             '-x', '0.0',
             '-y', '0.0',
-            '-z', '1.0',
+            '-z', '0.00',
         ],
         output='screen'
     )

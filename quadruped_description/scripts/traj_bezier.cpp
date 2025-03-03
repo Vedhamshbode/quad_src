@@ -44,7 +44,7 @@ public:
         double num_of_points = 20;
         double T = 4.0;
         double beta_u = 0.6;
-        int cycles = 3;
+        int cycles = 6;
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
         // Eigen::Vector3d P3(0.15, -0.054, 0.03);
         B = trajplanner(d, h, theta, P3, beta_u, num_of_points); 
@@ -59,10 +59,8 @@ public:
             // pubjangles(sol_r[i], {"rb1_base", "rb1_2", "rb2_3"}, T, num_of_points, "rb");
             cout<<i<<endl;
         }
-        for(int i= 0; i<cycles; i++){
-        trot_gait(sol_r, sol_l, T, num_of_points, beta_u);
-
-        }
+        trot_gait(sol_r, sol_l, T, num_of_points, beta_u,cycles);
+        
     }
     std::vector<double> ik_r( std::vector<std::array<double, 3>> B, int current_index)
     {
@@ -222,23 +220,19 @@ public:
         }
     }
 
-    void trot_gait(std::vector<std::vector<double>> sol_r, std::vector<std::vector<double>> sol_l, double T, double num_points, double beta_u){
+    void trot_gait(std::vector<std::vector<double>> sol_r, std::vector<std::vector<double>> sol_l, double T, double num_points, double beta_u, int cycles){
         auto start_time = std::chrono::high_resolution_clock::now();
         int count = 0, c= 0;
-        double shift_time = (T- beta_u*T);
+        // double shift_time = (T- beta_u*T);
+        double shift_time = 2.0;
 
-        for (int i = 0; i<sol_r.size(); i++)
-        {      
-            // ************** RIGHT LEG ***********************
+            //#################### initialization of RB ###################################
             auto msg_rb = trajectory_msgs::msg::JointTrajectory();
-        
-            // List of joint names
             msg_rb.joint_names = {"rb1_base", "rb1_2", "rb2_3"};
     
             auto point_rb = trajectory_msgs::msg::JointTrajectoryPoint();
-            point_rb.positions = {sol_r[i][0], sol_r[i][1], sol_r[i][2]};  // Target joint positions
+            point_rb.positions = {sol_r[0][0], sol_r[0][1], sol_r[0][2]};  // Target joint positions
             
-            // Set the duration to 1 second
             builtin_interfaces::msg::Duration duration;
             duration.sec = 0;         // Full seconds part
             duration.nanosec = T/num_points * 1000000000;  // 0.5 seconds = 500 million nanoseconds
@@ -247,62 +241,115 @@ public:
             
             joint_traj_pub_rb->publish(msg_rb);
 
-            // ************** LEFT LEG ***********************
+            //#################### initialization of LF ###################################
             auto msg_lf = trajectory_msgs::msg::JointTrajectory();
-        
-            // List of joint names
             msg_lf.joint_names = {"lf1_base", "lf1_2", "lf2_3"};
     
             auto point_lf = trajectory_msgs::msg::JointTrajectoryPoint();
-            point_lf.positions = {sol_l[i][0], sol_l[i][1], sol_l[i][2]}; // Target joint positions
+            point_lf.positions = {sol_l[0][0], sol_l[0][1], sol_l[0][2]}; // Target joint positions
             
             point_lf.time_from_start = duration;
             msg_lf.points.push_back(point_lf);
 
             joint_traj_pub_lf->publish(msg_lf);
 
-            auto end_time = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed_time = end_time - start_time;
-
-            
-            if (elapsed_time.count() > shift_time){
-                count ++;
-                if (count==1){
-                    c = i;
-                }
-         // ************** RIGHT LEG ***********************
-
+            //#################### initialization of RF ###################################
             auto msg_rf = trajectory_msgs::msg::JointTrajectory();
-        
-            // List of joint names
             msg_rf.joint_names = {"rf1_base", "rf1_2", "rf2_3"};
     
             auto point_rf = trajectory_msgs::msg::JointTrajectoryPoint();
-            point_rf.positions = {sol_r[i-c][0], sol_r[i-c][1], sol_r[i-c][2]};  // Target joint positions
+            point_rf.positions = {sol_r[10][0], sol_r[10][1], sol_r[10][2]};  // Target joint positions
             
             point_rf.time_from_start = duration;
             msg_rf.points.push_back(point_rf);
             
             joint_traj_pub_rf->publish(msg_rf);
-            // ************** LEFT LEG ***********************
+            
+            //#################### initialization of LB ###################################
             auto msg_lb = trajectory_msgs::msg::JointTrajectory();
-        
-            // List of joint names
             msg_lb.joint_names = {"lb1_base", "lb1_2", "lb2_3"};
     
             auto point_lb = trajectory_msgs::msg::JointTrajectoryPoint();
-            point_lb.positions = {sol_l[i-c][0], sol_l[i-c][1], sol_l[i-c][2]};  // Target joint positions
+            point_lb.positions = {sol_l[10][0], sol_l[10][1], sol_l[10][2]};  // Target joint positions
             
             point_lb.time_from_start = duration;
             msg_lb.points.push_back(point_lb);
             
             joint_traj_pub_lb->publish(msg_lb);
-            }
             
-            RCLCPP_INFO(this->get_logger(), "Published joint trajectory");
-           
             double time_to_wait = (T / num_points) * 1000;  // Convert to milliseconds
             rclcpp::sleep_for(std::chrono::milliseconds(static_cast<int>(time_to_wait)));
+
+        for (int j = 0; j<cycles; j++){
+
+            for (int i = 0; i<sol_r.size(); i++)
+            {      
+                c = 10+i;
+
+                // ############################  RB ######################
+                auto msg_rb = trajectory_msgs::msg::JointTrajectory();
+                msg_rb.joint_names = {"rb1_base", "rb1_2", "rb2_3"};
+        
+                auto point_rb = trajectory_msgs::msg::JointTrajectoryPoint();
+                point_rb.positions = {sol_r[i][0], sol_r[i][1], sol_r[i][2]};  // Target joint positions
+
+                builtin_interfaces::msg::Duration duration;
+                duration.sec = 0;         // Full seconds part
+                duration.nanosec = T/num_points * 1000000000;  // 0.5 seconds = 500 million nanoseconds
+                point_rb.time_from_start = duration;
+                msg_rb.points.push_back(point_rb);
+                
+                joint_traj_pub_rb->publish(msg_rb);
+
+                // ############################  LF ######################
+                auto msg_lf = trajectory_msgs::msg::JointTrajectory();
+                msg_lf.joint_names = {"lf1_base", "lf1_2", "lf2_3"};
+        
+                auto point_lf = trajectory_msgs::msg::JointTrajectoryPoint();
+                point_lf.positions = {sol_l[i][0], sol_l[i][1], sol_l[i][2]}; // Target joint positions
+                
+                point_lf.time_from_start = duration;
+                msg_lf.points.push_back(point_lf);
+
+                joint_traj_pub_lf->publish(msg_lf);
+
+                auto end_time = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed_time = end_time - start_time;
+
+
+                if (c>19){
+                    c = c-19;
+                }
+                // ############################  RF ######################
+
+                auto msg_rf = trajectory_msgs::msg::JointTrajectory();
+                msg_rf.joint_names = {"rf1_base", "rf1_2", "rf2_3"};
+        
+                auto point_rf = trajectory_msgs::msg::JointTrajectoryPoint();
+                point_rf.positions = {sol_r[c][0], sol_r[c][1], sol_r[c][2]};  // Target joint positions
+                
+                point_rf.time_from_start = duration;
+                msg_rf.points.push_back(point_rf);
+                
+                joint_traj_pub_rf->publish(msg_rf);
+
+                // ############################  LB ######################
+                auto msg_lb = trajectory_msgs::msg::JointTrajectory();
+                msg_lb.joint_names = {"lb1_base", "lb1_2", "lb2_3"};
+        
+                auto point_lb = trajectory_msgs::msg::JointTrajectoryPoint();
+                point_lb.positions = {sol_l[c][0], sol_l[c][1], sol_l[c][2]};  // Target joint positions
+                
+                point_lb.time_from_start = duration;
+                msg_lb.points.push_back(point_lb);
+                
+                joint_traj_pub_lb->publish(msg_lb);
+                
+                RCLCPP_INFO(this->get_logger(), "Published joint trajectory");
+            
+                double time_to_wait = (T / num_points) * 1000;  // Convert to milliseconds
+                rclcpp::sleep_for(std::chrono::milliseconds(static_cast<int>(time_to_wait)));
+            }
         }
 
     }
