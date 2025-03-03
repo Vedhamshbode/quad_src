@@ -5,21 +5,90 @@
         <hardware>
             <plugin>gazebo_ros2_control/GazeboSystem</plugin>
         </hardware>
-        <joint name="base_link1_joint">
+        <!-- ******************************************* lb -->
+
+        <joint name="lb1_base">
             <command_interface name="position">
                 <param name="min">-1.57</param>
                 <param name="max">1.57</param>
             </command_interface>
             <state_interface name="position"/>
         </joint>
-        <joint name="link1_link2_joint">
+        <joint name="lb1_2">
             <command_interface name="position">
                 <param name="min">-1.57</param>
                 <param name="max">1.57</param>
             </command_interface>
             <state_interface name="position"/>
         </joint>
-        <joint name="link2_link3_joint">
+        <joint name="lb2_3">
+            <command_interface name="position">
+                <param name="min">-0.523</param>
+                <param name="max">2.61</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <!-- ******************************************* lf -->
+         <joint name="lf1_base">
+            <command_interface name="position">
+                <param name="min">-1.57</param>
+                <param name="max">1.57</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="lf1_2">
+            <command_interface name="position">
+                <param name="min">-1.57</param>
+                <param name="max">1.57</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="lf2_3">
+            <command_interface name="position">
+                <param name="min">-0.523</param>
+                <param name="max">2.61</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <!-- ******************************************* rb -->
+         <joint name="rb1_base">
+            <command_interface name="position">
+                <param name="min">-1.57</param>
+                <param name="max">1.57</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="rb1_2">
+            <command_interface name="position">
+                <param name="min">-1.57</param>
+                <param name="max">1.57</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="rb2_3">
+            <command_interface name="position">
+                <param name="min">-0.523</param>
+                <param name="max">2.61</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+
+        <!-- ******************************************* rf -->
+         <joint name="rf1_base">
+            <command_interface name="position">
+                <param name="min">-1.57</param>
+                <param name="max">1.57</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="rf1_2">
+            <command_interface name="position">
+                <param name="min">-1.57</param>
+                <param name="max">1.57</param>
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
+        <joint name="rf2_3">
             <command_interface name="position">
                 <param name="min">-0.523</param>
                 <param name="max">2.61</param>

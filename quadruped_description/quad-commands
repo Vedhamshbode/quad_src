@@ -1,0 +1,7 @@
+ros2 topic pub /lb_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "{ header: {stamp: {sec: 0, nanosec: 0},frame_id: ''},joint_names: ['lb1_base', 'lb1_2', 'lb2_3'],points: [{positions: [0.5, -0.3, 1.2],velocities: [0.0, 0.0, 0.0], accelerations: [0.0, 0.0, 0.0], time_from_start: {sec: 1, nanosec: 0}}]}"
+
+ros2 topic pub /rb_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "{ header: {stamp: {sec: 0, nanosec: 0},frame_id: ''},joint_names: ['rb1_base', 'rb1_2', 'rb2_3'],points: [{positions: [0.5, -0.3, 1.2],velocities: [0.0, 0.0, 0.0], accelerations: [0.0, 0.0, 0.0], time_from_start: {sec: 1, nanosec: 0}}]}"
+
+ros2 topic pub /lf_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "{ header: {stamp: {sec: 0, nanosec: 0},frame_id: ''},joint_names: ['lf1_base', 'lf1_2', 'lf2_3'],points: [{positions: [0.5, -0.3, 1.2],velocities: [0.0, 0.0, 0.0], accelerations: [0.0, 0.0, 0.0], time_from_start: {sec: 1, nanosec: 0}}]}"
+
+ros2 topic pub /rf_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "{ header: {stamp: {sec: 0, nanosec: 0},frame_id: ''},joint_names: ['rf1_base', 'rf1_2', 'rf2_3'],points: [{positions: [0.5, -0.3, 1.2],velocities: [0.0, 0.0, 0.0], accelerations: [0.0, 0.0, 0.0], time_from_start: {sec: 1, nanosec: 0}}]}"

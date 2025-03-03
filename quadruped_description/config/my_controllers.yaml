@@ -2,18 +2,79 @@ controller_manager:
   ros__parameters:
     update_rate: 30
 
-    arm_cont:
+    lb_cont:
       type: joint_trajectory_controller/JointTrajectoryController
+
+    lf_cont:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    rb_cont:
+      type: joint_trajectory_controller/JointTrajectoryController
+    
+    rf_cont:
+      type: joint_trajectory_controller/JointTrajectoryController
+    
     joint_broad:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-arm_cont:
+lb_cont:
   ros__parameters:
 
     joints:
-      - base_link1_joint
-      - link1_link2_joint
-      - link2_link3_joint
+      - lb1_base
+      - lb1_2
+      - lb2_3
+
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+
+    open_loop_controller: true
+    allow_integration_in_goal_trajectory: true
+
+lf_cont:
+  ros__parameters:
+
+    joints:
+      - lf1_base
+      - lf1_2
+      - lf2_3
+
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+
+    open_loop_controller: true
+    allow_integration_in_goal_trajectory: true
+
+rb_cont:
+  ros__parameters:
+
+    joints:
+      - rb1_base
+      - rb1_2
+      - rb2_3
+
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+
+    open_loop_controller: true
+    allow_integration_in_goal_trajectory: true
+
+rf_cont:
+  ros__parameters:
+
+    joints:
+      - rf1_base
+      - rf1_2
+      - rf2_3
 
     command_interfaces:
       - position

@@ -257,11 +257,12 @@ private:
 
         // Assuming request->transformation is of type std_msgs::msg::Float32MultiArray
         std_msgs::msg::Float32MultiArray position = request->transformation;
+        string leg_name = request->leg;
 
         Vector3 loc = {position.data[0], position.data[1], position.data[2]};
 
 
-        Joint_Pose j = Inverse_position_kinematics(loc);
+        Joint_Pose j = Inverse_position_kinematics(loc, leg_name);
         // cout<<j.Theta_1<<" "<<j.Theta_2<<" "<<j.Theta_3<<endl;
         std_msgs::msg::Float32MultiArray jpose;
         jpose.data = {j.Theta_1, j.Theta_2, j.Theta_3};
@@ -269,7 +270,7 @@ private:
 
     }
 
-    Joint_Pose Inverse_position_kinematics(Vector3 loc){
+    Joint_Pose Inverse_position_kinematics(Vector3 loc, string leg_name){
         //****************/ robot parameters**********
         double d1 = 0.0255;
         double d2 = 0.054;
@@ -321,35 +322,34 @@ private:
         phi = atan((a3* sin(th32))/(a2+(a3*cos(th32))));
         th22 = asin((p[2] - d1)/sqrt((a2+(a3*cos(th32)))*(a2+(a3*cos(th32))) + ((a3*sin(th32))*(a3*sin(th32))) )) - phi;
         // cout<<"th22 "<<th22<<endl;
-        std::vector<DHParameter> dhParams1 = {
-            {0,     PI / 2,    0.0255,    th1},
-            {0.154,    0,         0.054,      th21},
-            {0.125,   0,    0,   th31}
-        };
+        // std::vector<DHParameter> dhParams1 = {
+        //     {0,     PI / 2,    0.0255,    th1},
+        //     {0.154,    0,         0.054,      th21},
+        //     {0.125,   0,    0,   th31}
+        // };
 
-        Cart_Pose pos1 = forwardKinematics(dhParams1);
-        std::vector<double> evec1;
-        evec1.push_back(abs(pos1.x - p3[0]));
-        evec1.push_back(abs(pos1.y - p3[1]));
-        evec1.push_back(abs(pos1.z - p3[2]));
+        // Cart_Pose pos1 = forwardKinematics(dhParams1);
+        // std::vector<double> evec1;
+        // evec1.push_back(abs(pos1.x - p3[0]));
+        // evec1.push_back(abs(pos1.y - p3[1]));
+        // evec1.push_back(abs(pos1.z - p3[2]));
 
-        max_it1 = *(std::max_element(evec1.begin(), evec1.end()));
-        th22 =0.0;
-        std::vector<DHParameter> dhParams2 = {
-            {0,     PI / 2,    0.0255,    th1},
-            {0.154,    0,         0.054,      th22},
-            {0.125,   0,    0,   th32}
-        };
+        // // max_it1 = *(std::max_element(evec1.begin(), evec1.end()));
+        // std::vector<DHParameter> dhParams2 = {
+        //     {0,     PI / 2,    0.0255,    th1},
+        //     {0.154,    0,         0.054,      th22},
+        //     {0.125,   0,    0,   th32}
+        // };
 
-        Cart_Pose pose2 = forwardKinematics(dhParams2);
-        std::vector<double> evec2;
-        evec2.push_back(abs(pose2.x - p3[0]));
-        evec2.push_back(abs(pose2.y - p3[1]));
-        evec2.push_back(abs(pose2.z - p3[2]));
+        // Cart_Pose pose2 = forwardKinematics(dhParams2);
+        // std::vector<double> evec2;
+        // evec2.push_back(abs(pose2.x - p3[0]));
+        // evec2.push_back(abs(pose2.y - p3[1]));
+        // evec2.push_back(abs(pose2.z - p3[2]));
 
-        max_it2 = *(std::max_element(evec2.begin(), evec2.end()));
+        // max_it2 = *(std::max_element(evec2.begin(), evec2.end()));
 
-        if(max_it1<max_it2){
+        if(leg_name == "right"){
             th2 = th21;
             th3 = th31;
         }

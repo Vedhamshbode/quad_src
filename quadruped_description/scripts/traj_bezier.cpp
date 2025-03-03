@@ -27,7 +27,11 @@ public:
     {
         std_msgs::msg::Float32MultiArray transformation;
 
-        joint_traj_pub_ = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/arm_cont/joint_trajectory", 10);
+        joint_traj_pub_rb = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/rb_cont/joint_trajectory", 10);
+        joint_traj_pub_lf = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/lf_cont/joint_trajectory", 10);
+        joint_traj_pub_lb = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/lb_cont/joint_trajectory", 10);
+        joint_traj_pub_rf = this->create_publisher<trajectory_msgs::msg::JointTrajectory>("/rf_cont/joint_trajectory", 10);
+
         client_ = this->create_client<custom_service::srv::IkSw>("ik_service");
         publisher_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
             "visualization_marker_array", 10);
@@ -35,38 +39,56 @@ public:
         //     std::chrono::seconds(1), std::bind(&TrajectoryPublisher::publish_trajectory, this));
 
         double d = 0.12;
-        double h = 0.06;
+        double h = 0.05;
         double theta = 0.0;  // Example angle in radians (45 degrees)
+        double num_of_points = 20;
+        double T = 4.0;
+        double beta_u = 0.6;
+        int cycles = 3;
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
         // Eigen::Vector3d P3(0.15, -0.054, 0.03);
-        B = trajplanner(d, h, theta, P3); 
+        B = trajplanner(d, h, theta, P3, beta_u, num_of_points); 
+        std::vector<std::vector<double>> sol_r;
+        std::vector<std::vector<double>> sol_l;
+        marker_pub(B, "dh_ref_lf");
 
         for (int i =0; i<B.size();i++){
 
-            init(B,i);
+            sol_r.push_back(ik_r(B,i));
+            sol_l.push_back(ik_l(B,B.size() - i -1));
+            // pubjangles(sol_r[i], {"rb1_base", "rb1_2", "rb2_3"}, T, num_of_points, "rb");
             cout<<i<<endl;
         }
+        for(int i= 0; i<cycles; i++){
+        trot_gait(sol_r, sol_l, T, num_of_points, beta_u);
+
+        }
     }
-    void init( std::vector<std::array<double, 3>> B, int current_index)
+    std::vector<double> ik_r( std::vector<std::array<double, 3>> B, int current_index)
     {
         while (!client_->wait_for_service(std::chrono::seconds(1))) {
             if (!rclcpp::ok()) {
                 RCLCPP_ERROR(this->get_logger(), "Interrupted while waiting for service. Exiting.");
-                return;
+                return {0.0,0.0,0.0};
+                
             }
             RCLCPP_INFO(this->get_logger(), "Waiting for service to be available...");
         }
+        // ********************************* right back leg data ****************************
 
         std_msgs::msg::Float32MultiArray transformation;
-            transformation.layout.dim.push_back(std_msgs::msg::MultiArrayDimension());
-            transformation.layout.dim[0].label = "dim1";  // Label for the dimension
-            transformation.layout.dim[0].size = 3;      // Size of the dimension
-            transformation.layout.dim[0].stride = 1;     // Stride for the dimension
-            transformation.layout.data_offset = 0;  
+        transformation.layout.dim.push_back(std_msgs::msg::MultiArrayDimension());
+        transformation.layout.dim[0].label = "dim1";  // Label for the dimension
+        transformation.layout.dim[0].size = 3;      // Size of the dimension
+        transformation.layout.dim[0].stride = 1;     // Stride for the dimension
+        transformation.layout.data_offset = 0;  
         transformation.data = {-B[current_index][2], B[current_index][1], B[current_index][0]};
+        
+        // ********************************* right back leg data request ****************************
 
         auto request = std::make_shared<custom_service::srv::IkSw::Request>();
         request->transformation = transformation;
+        request->leg = "right";
         auto future = client_->async_send_request(request);
 
         if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
@@ -82,96 +104,209 @@ public:
             }
             theta_vec.push_back(ang);
             cout<<"ang "<<ang[0]<<" "<<ang[1]<<" "<<ang[2]<<endl;
-
-            // pub_for moving
-            // for ( int i=0; i<theta_vec.size();i++){
-            //     auto joint_traj = trajectory_msgs::msg::JointTrajectory();
-            //     joint_traj.header.stamp = this->get_clock()->now();
-                
-            //     joint_traj.joint_names = {"base_link1_joint", "link1_link2_joint", "link2_link3_joint"};
-
-            //     trajectory_msgs::msg::JointTrajectoryPoint point;
-            //     point.positions = {0.2, 0.3, (0.1+((double) i)/10)};
-            //     point.velocities = {0.0, 0.0, 0.0};
-            //     point.accelerations = {0.0, 0.0, 0.0};
-
-            //     // Correct way to set time_from_start
-            //     point.time_from_start.sec = 1;
-            //     point.time_from_start.nanosec = 0;
-
-            //     joint_traj.points.push_back(point);
-
-            //     // Publish the trajectory
-            //     joint_traj_pub_->publish(joint_traj);
-            //     RCLCPP_INFO(this->get_logger(), "Published joint trajectory");
-            //     RCLCPP_INFO(this->get_logger(), "Sleeping for 1 seconds...");
-            //     rclcpp::sleep_for(std::chrono::seconds(1));  // Sleep for 2 seconds
-            //     RCLCPP_INFO(this->get_logger(), "Resuming execution after sleep.");
-
-            // }
-            // RCLCPP_INFO(this->get_logger(), "Resuming execution after sleep.");
-            auto msg = trajectory_msgs::msg::JointTrajectory();
-        
-            // List of joint names
-            msg.joint_names = {"base_link1_joint", "link1_link2_joint", "link2_link3_joint"};
-    
-            auto point = trajectory_msgs::msg::JointTrajectoryPoint();
-            point.positions = {ang[0], ang[1], ang[2]};  // Target joint positions
-            
-            // Set the duration to 1 second
-            builtin_interfaces::msg::Duration duration;
-            duration.sec = 0;         // Full seconds part
-            duration.nanosec = 200000000;  // 0.5 seconds = 500 million nanoseconds
-            point.time_from_start = duration;
-            
-            msg.points.push_back(point);
-            // ******************* marker code ******************
-            visualization_msgs::msg::MarkerArray marker_array;
-            std::vector<double> points = { -B[current_index][2], B[current_index][1], B[current_index][0]};
-
-            visualization_msgs::msg::Marker marker;
-            marker.header.frame_id = "dh_ref_base";  // Change to "odom" or "base_link" if needed
-            marker.header.stamp = this->now();
-            marker.ns = "marker_points";
-            marker.id = current_index;
-            marker.type = visualization_msgs::msg::Marker::SPHERE;
-            marker.action = visualization_msgs::msg::Marker::ADD;
-
-            marker.pose.position.x = points[0];
-            marker.pose.position.y = points[1];
-            marker.pose.position.z = points[2];
-
-            marker.scale.x = 0.009;  // Marker size
-            marker.scale.y = 0.009;
-            marker.scale.z = 0.009;
-
-            marker.color.a = 1.0;  // Fully visible
-            marker.color.r = 1.0;  // Red color
-            marker.color.g = 0.0;
-            marker.color.b = 0.0;
-
-            marker.lifetime = rclcpp::Duration::from_seconds(0);  // Infinite lifetime
-
-            marker_array.markers.push_back(marker);
-            publisher_->publish(marker_array);
-            RCLCPP_INFO(this->get_logger(), "Published %ld marker points", points.size());
-
-            // Publish the trajectory
-            joint_traj_pub_->publish(msg);
-            RCLCPP_INFO(this->get_logger(), "Published joint trajectory");
-           
-            // RCLCPP_INFO(this->get_logger(), "Sle     eping for 1 seconds...");
-            rclcpp::sleep_for(std::chrono::milliseconds(200));  // 500 milliseconds = 0.5 seconds
-
+            return ang;
         }
          else {
             RCLCPP_ERROR(this->get_logger(), "Service call failed.");
         }
     }
 
-    void pub(std::vector<std::vector<double>> theta_vec){
-        
+    std::vector<double> ik_l( std::vector<std::array<double, 3>> B, int current_index)
+    {
+        while (!client_->wait_for_service(std::chrono::seconds(1))) {
+            if (!rclcpp::ok()) {
+                RCLCPP_ERROR(this->get_logger(), "Interrupted while waiting for service. Exiting.");
+                return {0.0,0.0,0.0};
+            }
+            RCLCPP_INFO(this->get_logger(), "Waiting for service to be available...");
+        }
+        // ********************************* right back leg data ****************************
+
+        std_msgs::msg::Float32MultiArray transformation;
+        transformation.layout.dim.push_back(std_msgs::msg::MultiArrayDimension());
+        transformation.layout.dim[0].label = "dim1";  // Label for the dimension
+        transformation.layout.dim[0].size = 3;      // Size of the dimension
+        transformation.layout.dim[0].stride = 1;     // Stride for the dimension
+        transformation.layout.data_offset = 0;  
+        transformation.data = {-B[current_index][2], B[current_index][1], B[current_index][0]};
+        // std::vector<double> pts = {-B[current_index][2], -B[current_index][1], -B[current_index][0]};
+        // ********************************* right back leg data request ****************************
+
+        auto request = std::make_shared<custom_service::srv::IkSw::Request>();
+        request->transformation = transformation;
+        request->leg = "left";
+        auto future = client_->async_send_request(request);
+
+        if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) ==
+            rclcpp::FutureReturnCode::SUCCESS)
+        {
+            RCLCPP_INFO(this->get_logger(), "Result: ");
+            auto res = future.get()->jangles;
+            std::vector<std::vector<double>> theta_vec;
+            std::vector<double> ang;    
+
+            for (int i = 0;i<3;i++){
+                ang.push_back(res.data[i]);
+            }
+            theta_vec.push_back(ang);
+            // cout<<"ang "<<ang[0]<<" "<<ang[1]<<" "<<ang[2]<<endl;
+            return ang;
+        }
+         else {
+            RCLCPP_ERROR(this->get_logger(), "Service call failed.");
+        }
     }
+
+    void pubjangles(std::vector<double> jangles, std::vector<std::string> joint_names_, double T, double num_points, string leg_name){
+            auto msg = trajectory_msgs::msg::JointTrajectory();
+        
+            // List of joint names
+            msg.joint_names = joint_names_;
+    
+            auto point = trajectory_msgs::msg::JointTrajectoryPoint();
+            point.positions = {jangles[0], jangles[1], jangles[2]};  // Target joint positions
+            
+            // Set the duration to 1 second
+            builtin_interfaces::msg::Duration duration;
+            duration.sec = 0;         // Full seconds part
+            duration.nanosec = T/num_points * 1000000000;  // 0.5 seconds = 500 million nanoseconds
+            point.time_from_start = duration;
+            msg.points.push_back(point);
+            
+
+            // Publish the trajectory
+            if (leg_name == "rb"){
+                joint_traj_pub_rb->publish(msg);
+            }
+
+            else if (leg_name == "lf"){
+                joint_traj_pub_lf->publish(msg);
+            }
+            
+            RCLCPP_INFO(this->get_logger(), "Published joint trajectory");
+           
+            double time_to_wait = (T / num_points) * 1000;  // Convert to milliseconds
+            rclcpp::sleep_for(std::chrono::milliseconds(static_cast<int>(time_to_wait)));
+    }
+
+    void marker_pub(std::vector<std::array<double, 3>> pts, string frame_id ){
+        // ******************* marker code ******************
+        visualization_msgs::msg::MarkerArray marker_array;
+
+        visualization_msgs::msg::Marker marker;
+        for (int i =0; i<pts.size(); i++){
+            marker.header.frame_id = frame_id;  // Change to "odom" or "base_link" if needed
+            marker.header.stamp = this->now();
+            marker.ns = "marker_points";
+            marker.id = i;
+            marker.type = visualization_msgs::msg::Marker::SPHERE;
+            marker.action = visualization_msgs::msg::Marker::ADD;
+    
+            marker.pose.position.x = -pts[i][2];
+            marker.pose.position.y = pts[i][1];
+            marker.pose.position.z = -pts[i][0];
+    
+            marker.scale.x = 0.009;  // Marker size
+            marker.scale.y = 0.009;
+            marker.scale.z = 0.009;
+    
+            marker.color.a = 1.0;  // Fully visible
+            marker.color.r = 1.0;  // Red color
+            marker.color.g = 0.0;
+            marker.color.b = 0.0;
+    
+            marker.lifetime = rclcpp::Duration::from_seconds(0);  // Infinite lifetime
+    
+            marker_array.markers.push_back(marker);
+            publisher_->publish(marker_array);
+        }
+    }
+
+    void trot_gait(std::vector<std::vector<double>> sol_r, std::vector<std::vector<double>> sol_l, double T, double num_points, double beta_u){
+        auto start_time = std::chrono::high_resolution_clock::now();
+        int count = 0, c= 0;
+        double shift_time = (T- beta_u*T);
+
+        for (int i = 0; i<sol_r.size(); i++)
+        {      
+            // ************** RIGHT LEG ***********************
+            auto msg_rb = trajectory_msgs::msg::JointTrajectory();
+        
+            // List of joint names
+            msg_rb.joint_names = {"rb1_base", "rb1_2", "rb2_3"};
+    
+            auto point_rb = trajectory_msgs::msg::JointTrajectoryPoint();
+            point_rb.positions = {sol_r[i][0], sol_r[i][1], sol_r[i][2]};  // Target joint positions
+            
+            // Set the duration to 1 second
+            builtin_interfaces::msg::Duration duration;
+            duration.sec = 0;         // Full seconds part
+            duration.nanosec = T/num_points * 1000000000;  // 0.5 seconds = 500 million nanoseconds
+            point_rb.time_from_start = duration;
+            msg_rb.points.push_back(point_rb);
+            
+            joint_traj_pub_rb->publish(msg_rb);
+
+            // ************** LEFT LEG ***********************
+            auto msg_lf = trajectory_msgs::msg::JointTrajectory();
+        
+            // List of joint names
+            msg_lf.joint_names = {"lf1_base", "lf1_2", "lf2_3"};
+    
+            auto point_lf = trajectory_msgs::msg::JointTrajectoryPoint();
+            point_lf.positions = {sol_l[i][0], sol_l[i][1], sol_l[i][2]}; // Target joint positions
+            
+            point_lf.time_from_start = duration;
+            msg_lf.points.push_back(point_lf);
+
+            joint_traj_pub_lf->publish(msg_lf);
+
+            auto end_time = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> elapsed_time = end_time - start_time;
+
+            
+            if (elapsed_time.count() > shift_time){
+                count ++;
+                if (count==1){
+                    c = i;
+                }
+         // ************** RIGHT LEG ***********************
+
+            auto msg_rf = trajectory_msgs::msg::JointTrajectory();
+        
+            // List of joint names
+            msg_rf.joint_names = {"rf1_base", "rf1_2", "rf2_3"};
+    
+            auto point_rf = trajectory_msgs::msg::JointTrajectoryPoint();
+            point_rf.positions = {sol_r[i-c][0], sol_r[i-c][1], sol_r[i-c][2]};  // Target joint positions
+            
+            point_rf.time_from_start = duration;
+            msg_rf.points.push_back(point_rf);
+            
+            joint_traj_pub_rf->publish(msg_rf);
+            // ************** LEFT LEG ***********************
+            auto msg_lb = trajectory_msgs::msg::JointTrajectory();
+        
+            // List of joint names
+            msg_lb.joint_names = {"lb1_base", "lb1_2", "lb2_3"};
+    
+            auto point_lb = trajectory_msgs::msg::JointTrajectoryPoint();
+            point_lb.positions = {sol_l[i-c][0], sol_l[i-c][1], sol_l[i-c][2]};  // Target joint positions
+            
+            point_lb.time_from_start = duration;
+            msg_lb.points.push_back(point_lb);
+            
+            joint_traj_pub_lb->publish(msg_lb);
+            }
+            
+            RCLCPP_INFO(this->get_logger(), "Published joint trajectory");
+           
+            double time_to_wait = (T / num_points) * 1000;  // Convert to milliseconds
+            rclcpp::sleep_for(std::chrono::milliseconds(static_cast<int>(time_to_wait)));
+        }
+
+    }
+
 
     Matrix transposeMatrix(const Matrix& mat) {
         Matrix transposed(mat[0].size(), std::vector<double>(mat.size()));
@@ -305,7 +440,7 @@ public:
     //     }
     // }
 
-    std::vector<std::array<double, 3>> trajplanner(double d, double h, double theta, Eigen::Vector3d P3){
+    std::vector<std::array<double, 3>> trajplanner(double d, double h, double theta, Eigen::Vector3d P3, double beta_u, double num_points){
         RCLCPP_INFO(this->get_logger(), "trajplanning started");
 
         // % Compute step displacement components
@@ -329,7 +464,8 @@ public:
         //             {P5(0), P5(1), P5(2)}, 
         //             {P6(0), P6(1), P6(2)}};
 
-        std::vector<double> u_values = linspace(0.0, 1.0, 7);
+        // std::vector<double> u_values = linspace(0.0, 1.0, 7); beta_u = 0.5
+        std::vector<double> u_values = {0.0, (1-beta_u)/4, (1-beta_u)/2, 0.5, (1+beta_u)/2, (3+beta_u)/4, 1.0};
 
         // Matrix V = {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 
         //             {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 
@@ -362,7 +498,6 @@ public:
 
         Eigen::MatrixXd W = (V.transpose() * V).colPivHouseholderQr().solve(V.transpose() * P);
         // std::cout << "W Matrix:\n" << W << std::endl;
-        int num_points = 20;
         // cout<<" in to the func"<<endl;
 
         return bezier_curve_3d(W, num_points);
@@ -402,7 +537,11 @@ private:
     // Member variables
     double d, h, theta, P3; 
     std::vector<std::thread> threads_;
-    rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_traj_pub_;
+    rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_traj_pub_rb;
+    rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_traj_pub_lf;
+    rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_traj_pub_lb;
+    rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr joint_traj_pub_rf;
+
     rclcpp::Client<custom_service::srv::IkSw>::SharedPtr client_;
     rclcpp::TimerBase::SharedPtr timer_;
     size_t current_index;
