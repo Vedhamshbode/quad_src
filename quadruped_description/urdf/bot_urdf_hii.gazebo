@@ -68,56 +68,141 @@
 </gazebo>
 
 <gazebo reference="lb3">
-  <material>${body_color}</material>
-  <mu1>0.2</mu1>
-  <mu2>0.2</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>1.5</mu1>
+  <mu2>1.5</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>0.0</restitution_coefficient>
+  <threshold>0.2</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 
 <gazebo reference="lf3">
-  <material>${body_color}</material>
-  <mu1>0.2</mu1>
-  <mu2>0.2</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>1.5</mu1>
+  <mu2>1.5</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>0.0</restitution_coefficient>
+  <threshold>0.2</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 
 <gazebo reference="rb3">
-  <material>${body_color}</material>
-  <mu1>0.2</mu1>
-  <mu2>0.2</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>1.5</mu1>
+  <mu2>1.5</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>0.0</restitution_coefficient>
+  <threshold>0.2</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 
 <gazebo reference="rf3">
-  <material>${body_color}</material>
-  <mu1>0.2</mu1>
-  <mu2>0.2</mu2>
-  <selfCollide>true</selfCollide>
+  <!-- <mu1>5.0</mu1>
+  <mu2>5.0</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="2147483647.0" />
+  <kd value="100.0" />
+  <maxVel>0.01</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.001</minDepth> 
+
+  <restitution_coefficient>1</restitution_coefficient>
+  <threshold>0</threshold>
+
+  <material>Gazebo/DarkGrey</material> -->
+  <mu1>1.5</mu1>
+  <mu2>1.5</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>0.0</restitution_coefficient>
+  <threshold>0.2</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 
 <gazebo reference="leg_rb_tip">
-  <material>${body_color}</material>
- <mu1>999999999999999999999</mu1>
-  <mu2>999999999999999999999</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>0.6</mu1>
+  <mu2>0.6</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>1.0</restitution_coefficient>
+  <threshold>0.0</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 <gazebo reference="leg_rf_tip">
-  <material>${body_color}</material>
-  <mu1>999999999999999999999</mu1>
-  <mu2>999999999999999999999</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>0.6</mu1>
+  <mu2>0.6</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>1.0</restitution_coefficient>
+  <threshold>0.0</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 <gazebo reference="leg_lb_tip">
-  <material>${body_color}</material>
-  <mu1>999999999999999999999</mu1>
-  <mu2>999999999999999999999</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>0.6</mu1>
+  <mu2>0.6</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>1.0</restitution_coefficient>
+  <threshold>0.0</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 <gazebo reference="leg_lf_tip">
-  <material>${body_color}</material>
- <mu1>999999999999999999999</mu1>
-  <mu2>999999999999999999999</mu2>
-  <selfCollide>true</selfCollide>
+  <mu1>0.6</mu1>
+  <mu2>0.6</mu2>
+  <fdir1>1 1 0</fdir1>
+  <kp value="3000000.0" />
+  <kd value="2000.0" />
+  <maxVel>0.05</maxVel>
+  <self_collide>1</self_collide>
+  <minDepth>0.005</minDepth> 
+
+  <restitution_coefficient>1.0</restitution_coefficient>
+  <threshold>0.0</threshold>
+
+  <material>Gazebo/DarkGrey</material>
 </gazebo>
 
 

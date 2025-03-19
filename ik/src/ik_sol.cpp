@@ -267,6 +267,7 @@ private:
         std_msgs::msg::Float32MultiArray jpose;
         jpose.data = {j.Theta_1, j.Theta_2, j.Theta_3};
         response->jangles = jpose;
+        response->res = true;
 
     }
 

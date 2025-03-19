@@ -2,9 +2,18 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <ros2_control name="GazeboSystem" type="system">
-        <hardware>
-            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
-        </hardware>
+        <xacro:if value="$(eval is_sim)">
+            <hardware>
+                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+            </hardware>
+        </xacro:if>
+
+        <xacro:if value="$(eval not is_sim)">
+            <hardware>
+                <plugin>bumperbot_controller/RobotInterface</plugin>
+                <param name="port">/dev/ttyACM0</param>
+            </hardware>
+        </xacro:if>
         <!-- ******************************************* lb -->
 
         <joint name="lb1_base">

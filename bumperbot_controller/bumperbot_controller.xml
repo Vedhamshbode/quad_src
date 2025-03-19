@@ -1,0 +1,10 @@
+<library path="bumperbot_controller">
+    <class name="bumperbot_controller/RobotInterface"
+        type="bumperbot_controller::RobotInterface"
+        base_class_type = "hardware_interface::SystemInterface">
+        <description>
+            My hardware interface
+        </description>
+    </class>
+
+</library>

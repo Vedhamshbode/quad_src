@@ -7,16 +7,16 @@ from builtin_interfaces.msg import Duration
 class TrajectoryPublisher(Node):
     def __init__(self):
         super().__init__('trajectory_publisher')
-        self.publisher = self.create_publisher(JointTrajectory, '/arm_cont/joint_trajectory', 10)
+        self.publisher = self.create_publisher(JointTrajectory, '/lb_cont/joint_trajectory', 10)
         self.timer = self.create_timer(1.0, self.publish_trajectory)
 
     def publish_trajectory(self):
         msg = JointTrajectory()
-        msg.joint_names = ['base_link1_joint', 'link1_link2_joint', 'link2_link3_joint']  # List of joint names
+        msg.joint_names = ['lb1_base', 'lb1_2', 'lb2_3']  # List of joint names
         point = JointTrajectoryPoint()
-        point.positions = [-0.89, -1.45, 0.78]  # List of joint positions
+        point.positions = [-1.55, 0.0, 0.0]  # List of joint positions
         point.time_from_start = Duration()  # Time duration
-        point.time_from_start.sec = 1
+        point.time_from_start.sec = 3
         msg.points.append(point)
         self.publisher.publish(msg)
         self.timer.cancel()

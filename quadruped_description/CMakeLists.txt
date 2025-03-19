@@ -16,7 +16,7 @@ find_package(trajectory_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-
+find_package(nav_msgs REQUIRED)
 
 
 
@@ -46,11 +46,15 @@ install(
 
 )
 add_executable(traj_bezier scripts/traj_bezier.cpp) 
-ament_target_dependencies(traj_bezier rclcpp std_msgs custom_service trajectory_msgs builtin_interfaces geometry_msgs visualization_msgs)
+ament_target_dependencies(traj_bezier rclcpp std_msgs custom_service trajectory_msgs builtin_interfaces nav_msgs geometry_msgs visualization_msgs)
+
+add_executable(traj_saver scripts/traj_saver.cpp) 
+ament_target_dependencies(traj_saver rclcpp std_msgs custom_service trajectory_msgs builtin_interfaces nav_msgs geometry_msgs visualization_msgs)
 
 
 install(TARGETS
 traj_bezier
+traj_saver
   DESTINATION lib/${PROJECT_NAME}
 )
 

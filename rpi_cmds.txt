@@ -1,0 +1,16 @@
+10.50.15.145
+hostename - I //for ip address
+password - 1234
+username - qpi
+
+*RPI*
+1-> sudo apt install openssh-server
+2-> sudo systemctl enable ssh
+3-> sudo systemcytl start // to configure to ssh mode automatically as rpi starts
+4-> sudo systemctl status ssh  // to verify ssh is running or not
+5-> hostename - I
+
+*PC*
+1-> ssh qpi@10.50.15.145
+1->
+1->
