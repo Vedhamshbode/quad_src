@@ -76,7 +76,7 @@ struct Joint_Pose
         //     std::chrono::seconds(1), std::bind(&TrajectoryPublisher::publish_trajectory, this));
 
         d = 0.08;
-        h = 0.03;
+        h = 0.045;
         theta = 0.0;  // Example angle in radians (45 degrees)
 
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
@@ -1268,7 +1268,7 @@ private:
     double beta_u = 0.6;
     double T = 1.0;
     int cycles = 15;
-    double d, h, theta, cp_max=0.08, freq_max=1.66, freq_min=0.16; 
+    double d, h, theta, cp_max=0.10, freq_max=1.66, freq_min=0.16; 
     double max_v = 0.16, max_w = 0.1; //change the values
     int flag = 0;
     // Eigen::Vector3d P3(0.025, -0.054, -0.25);
