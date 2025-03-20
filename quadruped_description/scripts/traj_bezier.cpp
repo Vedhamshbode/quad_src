@@ -76,7 +76,7 @@ struct Joint_Pose
         //     std::chrono::seconds(1), std::bind(&TrajectoryPublisher::publish_trajectory, this));
 
         d = 0.08;
-        h = 0.045;
+        h = 0.03;
         theta = 0.0;  // Example angle in radians (45 degrees)
 
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
@@ -101,7 +101,7 @@ struct Joint_Pose
 
         RCLCPP_INFO(this->get_logger(), "velocities received..: vx, vy, wz : %f, %f, %f", msg.linear.x, msg.linear.y, msg.angular.z);
     
-        if(msg.linear.x<max_v && msg.linear.y<max_v && msg.angular.z<max_w){
+        if(msg.linear.x<=max_v && msg.linear.y<=max_v && msg.angular.z<=max_w){
             robot_vel[0] = (msg.linear.x);
             robot_vel[1] = (msg.linear.y);
             robot_vel[2] = (msg.angular.z);
@@ -704,7 +704,9 @@ struct Joint_Pose
     void teleop(std::vector<double> body_vel){
 
         RCLCPP_INFO(this->get_logger(), "teleop_called..");
-        Eigen::Vector3d P3(0.025, -0.054, -0.25);
+        // Eigen::Vector3d P3(0.025, -0.054, -0.25);
+        Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
+        Eigen::Vector3d P3l(0.06, -0.054, -0.23);
         std::vector<double> tip_vel = vel_ik(body_vel); //get tip velocities and directions {thetas!}
         //find max tip velocity!
         double max_vel = 0;
@@ -745,10 +747,10 @@ struct Joint_Pose
             d_lf = leg_bezier[0];
         }
 
-        B_rf = trajplanner(d_rf, h, tip_vel[4], P3, beta_u, num_points);
-        B_rb = trajplanner(d_rb, h, tip_vel[5], P3, beta_u, num_points);
-        B_lb = trajplanner(d_lb, h, tip_vel[6], P3, beta_u, num_points);
-        B_lf = trajplanner(d_lf, h, tip_vel[7], P3, beta_u, num_points);
+        B_rf = trajplanner(d_rf, h, tip_vel[4], P3r, beta_u, num_points);
+        B_rb = trajplanner(d_rb, h, tip_vel[5], P3r, beta_u, num_points);
+        B_lb = trajplanner(d_lb, h, tip_vel[6], P3l, beta_u, num_points);
+        B_lf = trajplanner(d_lf, h, tip_vel[7], P3l, beta_u, num_points);
 
         RCLCPP_INFO(this->get_logger(), "Frequency : %f ", leg_bezier[1]);
         T = 1/leg_bezier[1]; //time period from frequency!
@@ -906,8 +908,8 @@ struct Joint_Pose
 
         is_initial = 0;
 
-        Eigen::Vector3d P3r(0.0, -0.054, -0.23);
-        Eigen::Vector3d P3l(0.045, -0.054, -0.23);
+        Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
+        Eigen::Vector3d P3l(0.06, -0.054, -0.23);
 
 
         std::vector<std::array<double, 3>> Pr = {{P3r[0], P3r[1], P3r[2]}}; 
@@ -1269,7 +1271,7 @@ private:
     double T = 1.0;
     int cycles = 15;
     double d, h, theta, cp_max=0.10, freq_max=1.66, freq_min=0.16; 
-    double max_v = 0.16, max_w = 0.1; //change the values
+    double max_v = 0.16, max_w = 0.15; //change the values
     int flag = 0;
     // Eigen::Vector3d P3(0.025, -0.054, -0.25);
     std::vector<std::vector<double>> sol_r;
