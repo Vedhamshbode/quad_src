@@ -15,6 +15,11 @@
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include <nav_msgs/msg/odometry.hpp>
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+
 
 #define PI 3.14159265358979323846
 
@@ -72,6 +77,8 @@ struct Joint_Pose
         vel_sub = create_subscription<geometry_msgs::msg::Twist>("/cmd_vel",10,std::bind(&TrajBezier::vel_callback, this,std::placeholders::_1));
         client_ = this->create_client<custom_service::srv::IkSw>("ik_service");
         publisher_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("visualization_marker_array", 10);
+        odom_pub = create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+
         // timer_ = this->create_wall_timer(
         //     std::chrono::seconds(1), std::bind(&TrajectoryPublisher::publish_trajectory, this));
 
@@ -631,8 +638,9 @@ struct Joint_Pose
         double thrb = atan2(vt,(vd+0.0001));
         double thlb = atan2(vt,(ve+0.0001));
         double thlf = atan2(vf,(ve+0.0001));
+        double omega = (vd - ve)/l;
 
-        std::vector<double> tip_vel = {sqrt(vf*vf + vd*vd), sqrt(vt*vt + vd*vd), sqrt(vt*vt + ve*ve), sqrt(vf*vf + ve*ve), thrf, thrb, thlb, thlf}; //rf, rb, lb, lf
+        std::vector<double> tip_vel = {sqrt(vf*vf + vd*vd), sqrt(vt*vt + vd*vd), sqrt(vt*vt + ve*ve), sqrt(vf*vf + ve*ve), thrf, thrb, thlb, thlf, omega}; //rf, rb, lb, lf
     
         // Print the result
         // std::cout << "lateral_velociies:\n" << lat_vel << std::endl;
@@ -902,6 +910,95 @@ struct Joint_Pose
         
         double time_to_wait = (T / num_points) * 1000;  // Convert to milliseconds
         rclcpp::sleep_for(std::chrono::milliseconds(static_cast<int>(time_to_wait)));
+    }
+
+    void odometry(std::vector<double> body_vel){
+        double max_vel = 0;
+        int index=0;
+        std::vector<double> tip_vel = vel_ik(body_vel); //get the tip velocities and omega
+        for (int i=0;i<4;i++){
+            if(max_vel<tip_vel[i]){
+                max_vel = tip_vel[i];
+                index = i;
+            }
+        }
+        
+        std::vector<double> leg_bezier = freq_cp(tip_vel[index], cp_max, freq_min, freq_max);
+
+        // std::vector<double> leg_bezier = bezier_params(tip_vel[index], cp_max, freq_min, freq_max); //get freq and cp for highest leg velocity!
+        // std::vector<string> legs = {"rf", "rb", "lb", "lf"}//
+        double d_rf = tip_vel[0]/leg_bezier[1];
+        double d_rb = tip_vel[1]/leg_bezier[1];
+        double d_lb = tip_vel[2]/leg_bezier[1];
+        double d_lf = tip_vel[3]/leg_bezier[1];
+        if(index==0){
+            //rf is of mx velocity!
+            // i know its step length and freq
+            d_rf = leg_bezier[0];
+        }
+        else if(index==1){
+            //rb is of mx velocity!
+            // i know its step length and freq
+            d_rb = leg_bezier[0];
+        }
+        else if(index==2){
+            //lb is of mx velocity!
+            // i know its step length and freq
+            d_lb = leg_bezier[0];
+        }
+        else if(index==3){
+            //lf is of mx velocity!
+            // i know its step length and freq
+            d_lf = leg_bezier[0];
+        }
+        double theta = (tip_vel[8])*(1/leg_bezier[1]); //theta of robot!
+        double d1 = d_rf*cos(tip_vel[4]);
+        double d2 = d_lf*cos(tip_vel[7]);
+        double d3 = d_rf*sin(tip_vel[4]);
+        double d4 = d_rb*sin(tip_vel[5]);
+        double dx = (d1+d2)/2;
+        double dy = (d3+d4)/2;
+        double odom_x = dx*cos(theta) - dy*sin(theta);
+        double odom_y = dx*sin(theta) + dy*cos(theta);
+        //declaring odom message and transforms..
+        nav_msgs::msg::Odometry odom_msg;
+        std::unique_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster;
+        geometry_msgs::msg::TransformStamped transform_stamped;
+        
+        odom_msg.header.frame_id = "odom";
+        odom_msg.child_frame_id = "base_footprint";
+        odom_msg.pose.pose.orientation.x = 0.0;
+        odom_msg.pose.pose.orientation.y = 0.0;
+        odom_msg.pose.pose.orientation.z = 0.0;
+        odom_msg.pose.pose.orientation.w = 1.0;
+    
+        transform_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+        transform_stamped.header.frame_id = "odom";
+        transform_stamped.child_frame_id = "base_footprint"; 
+        // rclcpp::Time msg_time = msg.header.stamp;
+        tf2::Quaternion q;
+        q.setRPY(0,0,theta); //yaw
+        odom_msg.pose.pose.orientation.x= q.x();
+        odom_msg.pose.pose.orientation.y= q.y();
+        odom_msg.pose.pose.orientation.z= q.z();
+        odom_msg.pose.pose.orientation.w= q.w();
+        odom_msg.header.stamp = get_clock()->now();
+        odom_msg.pose.pose.position.x  = odom_x;
+        odom_msg.pose.pose.position.y = odom_y;
+        // odom_msg.twist.twist.linear.x = linear;
+        odom_msg.twist.twist.angular.z = tip_vel[8];
+
+        transform_stamped.transform.translation.x = odom_x;
+        transform_stamped.transform.translation.y = odom_y;
+        transform_stamped.transform.rotation.x = q.x();
+        transform_stamped.transform.rotation.y = q.y();
+        transform_stamped.transform.rotation.z = q.z();
+        transform_stamped.transform.rotation.w = q.w();
+        transform_stamped.header.stamp = get_clock()->now();
+
+        odom_pub->publish(odom_msg);
+        transform_broadcaster->sendTransform(transform_stamped);
+
     }
     
     void grounded(){
@@ -1303,6 +1400,7 @@ private:
     int is_initial = 0;
 
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr publisher_;
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub;
   
 
 };
