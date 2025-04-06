@@ -1,12 +1,13 @@
 <?xml version="1.0" ?>
 <robot name="FusionComponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:arg name="is_sim" default="false"/>
+<xacro:arg name="is_sim" default="true"/>
 
 <xacro:include filename="$(find quadruped_description)/urdf/materials.xacro" />
 <!-- <xacro:include filename="$(find quadruped_description)/urdf/bot_urdf_hii.trans" /> -->
 <xacro:include filename="$(find quadruped_description)/urdf/bot_urdf_hii.gazebo" />
 <xacro:include filename="$(find quadruped_description)/urdf/ros2_control.xacro" />
+<xacro:include filename="$(find quadruped_description)/urdf/lidar.xacro" />
 
 <xacro:macro name="box_inertia" params="m l w h xyz rpy">
   <inertial>

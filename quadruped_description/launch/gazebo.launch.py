@@ -75,6 +75,11 @@ def generate_launch_description():
         executable='static_tf.py',
     )
 
+    static_tf_node = Node(
+        package='quadruped_description',
+        executable='static_tf.py',
+    )
+
     urdf_spawn_node = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
@@ -125,7 +130,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument('use_sim_time', default_value='true', description='Use simulation time if true'),
+        # DeclareLaunchArgument('use_sim_time', default_value='true', description='Use simulation time if true'),
         robot_state_publisher_node,
         # pause_simulation,
         gazebo_server,
