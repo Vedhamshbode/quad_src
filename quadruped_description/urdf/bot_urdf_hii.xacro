@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="FusionComponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:arg name="is_sim" default="true"/>
+<xacro:arg name="is_sim" default="false"/>
 
 <xacro:include filename="$(find quadruped_description)/urdf/materials.xacro" />
 <!-- <xacro:include filename="$(find quadruped_description)/urdf/bot_urdf_hii.trans" /> -->
@@ -18,7 +18,8 @@
   </inertial>
 </xacro:macro>
 
-<link name="world"></link>
+<!-- <link name="world"></link> -->
+<!-- <link name="base_footprint"></link> -->
 <link name="base_link">
   <!-- <inertial>
     <origin xyz="0.01 0.0 0.3459" rpy="0 0 0"/>
@@ -318,11 +319,11 @@
   <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
 </joint> --> 
 
-<joint name="virtual_joint" type="fixed">
+<!-- <joint name="virtual_joint" type="fixed">
   <origin xyz="0.0 0.0 0.3" rpy="0.0 0.0 0.0"/>
   <parent link="world"/>
   <child link="base_link"/>
-</joint>
+</joint> -->
 
 <link name="leg_rb_tip">
 <visual>
@@ -420,6 +421,12 @@
             </surface>
         </collision>
 </link>
+
+<!-- <joint name="footprint_joint" type="fixed">
+  <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="base_footprint"/>
+</joint> -->
 
 <joint name="lb1_base" type="revolute">
   <origin xyz="0.159093 -0.13841 0.359825" rpy="0 0 0"/>

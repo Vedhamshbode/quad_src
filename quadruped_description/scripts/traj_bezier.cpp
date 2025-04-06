@@ -121,7 +121,7 @@ struct Joint_Pose
         //     is_initial=0;
         //     grounded();
         // }
-
+        odometry(robot_vel);
         teleop(robot_vel);        
 
     }
@@ -958,15 +958,15 @@ struct Joint_Pose
         double d4 = d_rb*sin(tip_vel[5]);
         double dx = (d1+d2)/2;
         double dy = (d3+d4)/2;
-        double odom_x = dx*cos(theta) - dy*sin(theta);
-        double odom_y = dx*sin(theta) + dy*cos(theta);
+        odom_x = odom_x + dx*cos(theta) - dy*sin(theta);
+        odom_y = odom_y + dx*sin(theta) + dy*cos(theta);
         //declaring odom message and transforms..
         nav_msgs::msg::Odometry odom_msg;
         std::unique_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster;
         geometry_msgs::msg::TransformStamped transform_stamped;
         
         odom_msg.header.frame_id = "odom";
-        odom_msg.child_frame_id = "base_footprint";
+        odom_msg.child_frame_id = "base_link";
         odom_msg.pose.pose.orientation.x = 0.0;
         odom_msg.pose.pose.orientation.y = 0.0;
         odom_msg.pose.pose.orientation.z = 0.0;
@@ -974,7 +974,7 @@ struct Joint_Pose
     
         transform_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
         transform_stamped.header.frame_id = "odom";
-        transform_stamped.child_frame_id = "base_footprint"; 
+        transform_stamped.child_frame_id = "base_link"; 
         // rclcpp::Time msg_time = msg.header.stamp;
         tf2::Quaternion q;
         q.setRPY(0,0,theta); //yaw
@@ -1367,7 +1367,7 @@ private:
     double beta_u = 0.6;
     double T = 1.0;
     int cycles = 15;
-    double d, h, theta, cp_max=0.10, freq_max=1.66, freq_min=0.16; 
+    double d, h, theta, cp_max=0.06, freq_max=1.66, freq_min=0.80; 
     double max_v = 0.16, max_w = 0.15; //change the values
     int flag = 0;
     // Eigen::Vector3d P3(0.025, -0.054, -0.25);
@@ -1401,6 +1401,7 @@ private:
 
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr publisher_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub;
+    double odom_x, odom_y;
   
 
 };
