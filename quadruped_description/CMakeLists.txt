@@ -41,7 +41,7 @@ install(
 )
 install(
   PROGRAMS 
-  scripts/test.py
+  # scripts/test.py
   scripts/static_tf.py
   DESTINATION lib/${PROJECT_NAME}
 
