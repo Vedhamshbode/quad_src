@@ -72,10 +72,10 @@ ros2 launch quadruped_description joystick.launch.py
 Watch the robot in action:  
 [YouTube: Quadruped ROS2](https://www.youtube.com/watch?v=Hp6pkhH9xcw)
 
-## 📄 Research Paper
+## 📄 Documentation with References
 
 The analytical inverse‐kinematics derivation and controller design are detailed here:  
-[Drive – Full Paper PDF](https://drive.google.com/file/d/1Jtqgm3kopphQJQr6SnIF_63w5bkKK_db/view?usp=sharing)
+[Drive – Full Paper PDF](https://drive.google.com/file/d/1AhLOHZtVqzcN-Uf4wpNRpf7q7WiO6p27/view?usp=sharing)
 
 
 
