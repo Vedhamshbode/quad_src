@@ -90,25 +90,25 @@ def generate_launch_description():
     lb_cont_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["lb_cont"],
+        arguments=['lb_cont', '--controller-manager-timeout', '10'],
     )
 
     lf_cont_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["lf_cont"],
+        arguments=['lf_cont', '--controller-manager-timeout', '10']
     )
 
     rb_cont_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["rb_cont"],
+        arguments=['rb_cont', '--controller-manager-timeout', '10']
     )
 
     rf_cont_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["rf_cont"],
+        arguments=['rf_cont', '--controller-manager-timeout', '10']
     )
 
     joint_broad_spawner = Node(
@@ -146,7 +146,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_broad_spawner,
-                on_exit=[lb_cont_spawner],
+                on_exit=[TimerAction(period=1.0, actions=[lb_cont_spawner]),],
             )
         ),
 
@@ -154,7 +154,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=lb_cont_spawner,
-                on_exit=[lf_cont_spawner],
+                on_exit=[TimerAction(period=1.0, actions=[lf_cont_spawner]),],
             )
         ),
 
@@ -162,7 +162,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=lf_cont_spawner,
-                on_exit=[rb_cont_spawner],
+                on_exit=[TimerAction(period=1.0, actions=[rb_cont_spawner]),],
             )
         ),
 
@@ -170,7 +170,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=rb_cont_spawner,
-                on_exit=[rf_cont_spawner],
+                on_exit=[TimerAction(period=1.0, actions=[rf_cont_spawner]),],
             )
         ),
 
@@ -178,7 +178,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=rf_cont_spawner,
-                on_exit=[bridge],
+                on_exit=[TimerAction(period=1.0, actions=[bridge]),],
             )
         ),
 

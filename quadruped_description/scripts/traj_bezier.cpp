@@ -1046,8 +1046,8 @@ struct Joint_Pose
         point_rb.positions = {solution_r[0], solution_r[1], solution_r[2]};  // Target joint positions
         
         builtin_interfaces::msg::Duration duration;
-        duration.sec = 0;         // Full seconds part
-        duration.nanosec = 0.2 * 1000000000;  // 0.5 seconds = 500 million nanoseconds
+        duration.sec = 1;         // Full seconds part
+        // duration.nanosec = 0.2 * 1000000000;  // 0.5 seconds = 500 million nanoseconds
         point_rb.time_from_start = duration;
         msg_rb.points.push_back(point_rb);
         
@@ -1089,7 +1089,7 @@ struct Joint_Pose
         
         joint_traj_pub_lb->publish(msg_lb);
         
-        double time_to_wait = (0.2) * 1000;  // Convert to milliseconds
+        double time_to_wait = (1) * 1000;  // Convert to milliseconds
         rclcpp::sleep_for(std::chrono::milliseconds(static_cast<int>(time_to_wait)));
     }
 
