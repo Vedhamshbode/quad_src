@@ -1,0 +1,4 @@
+bool start  # Input array
+---
+std_msgs/Float32MultiArray data
+bool res

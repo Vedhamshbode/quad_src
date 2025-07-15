@@ -1,0 +1,4 @@
+string filename
+float64 duration
+---
+bool success

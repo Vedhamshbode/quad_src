@@ -1,0 +1,552 @@
+<?xml version="1.0" ?>
+<robot name="FusionComponent" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:arg name="is_sim" default="true"/>
+
+<xacro:include filename="$(find quadruped_description)/urdf/materials.xacro" />
+<!-- <xacro:include filename="$(find quadruped_description)/urdf/bot_urdf_hii.trans" /> -->
+<xacro:include filename="$(find quadruped_description)/urdf/bot_urdf_hii.gazebo" />
+<xacro:include filename="$(find quadruped_description)/urdf/ros2_control.xacro" />
+<xacro:include filename="$(find quadruped_description)/urdf/lidar.xacro" />
+
+<xacro:macro name="box_inertia" params="m l w h xyz rpy">
+  <inertial>
+    <origin xyz="${xyz}" rpy="${rpy}" />
+    <mass value="${m}" />
+    <inertia ixx="${(m/12)*(h*h + l*l)}" ixy="0" ixz="0"
+              iyy="${(m/12)*(w*w +l*l)}" iyz="0"
+              izz="${(m/12)*(w*w + h*h)}" />
+  </inertial>
+</xacro:macro>
+
+<!-- <link name="world"></link>  -->
+<!-- <link name="base_footprint"></link> -->
+<link name="base_link">
+  <!-- <inertial>
+    <origin xyz="0.01 0.0 0.3459" rpy="0 0 0"/>
+    <mass value="2.5"/>
+    <inertia ixx="0.02245" iyy="0.02245" izz="0.02245" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial> -->
+  <xacro:box_inertia m="1.0" l="0.10" w="0.244" h="0.27" xyz="0.01 0.0 0.3459" rpy="0 0 0" />
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lb1">
+  <inertial>
+    <origin xyz="-0.025499639213758474 -0.03608650849380332 0.008837273060876838" rpy="0 0 0"/>
+    <mass value="0.01"/>
+    <inertia ixx="1.9e-05" iyy="1.9e-05" izz="1.9e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="-0.159093 0.13841 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lb1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.159093 0.13841 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lb1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lf1">
+  <inertial>
+    <origin xyz="-0.025499639213758293 -0.03608650849380346 0.008837273060876838" rpy="0 0 0"/>
+    <mass value="0.01"/>
+    <inertia ixx="1.9e-05" iyy="1.9e-05" izz="1.9e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="0.085907 0.13841 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lf1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.085907 0.13841 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lf1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="rb1">
+  <inertial>
+    <origin xyz="-0.02549946018937349 0.03608721798818135 0.008837273060868067" rpy="0 0 0"/>
+    <mass value="0.01"/>
+    <inertia ixx="1.9e-05" iyy="1.9e-05" izz="1.9e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="-0.159093 -0.13159 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rb1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.159093 -0.13159 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rb1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="rf1">
+  <inertial>
+    <origin xyz="-0.025499460189373144 0.0360872179881816 0.008837273060868123" rpy="0 0 0"/>
+    <mass value="0.01"/>
+    <inertia ixx="1.9e-05" iyy="1.9e-05" izz="1.9e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="0.085907 -0.13159 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rf1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.085907 -0.13159 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rf1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lb2">
+  <inertial>
+    <origin xyz="4.4053550116163187e-07 -0.024997352134525086 -0.058" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="0.00095" iyy="0.000922" izz="4.7e-05" ixy="-0.0" iyz="-0.0" ixz="-0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="-0.133593 0.16741 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lb2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.133593 0.16741 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lb2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lf2">
+  <inertial>
+    <origin xyz="4.4053550139755426e-07 -0.02499735213452492 -0.058" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="0.00095" iyy="0.000922" izz="4.7e-05" ixy="-0.0" iyz="-0.0" ixz="-0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="0.111407 0.16741 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lf2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.111407 0.16741 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lf2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="rb2">
+  <inertial>
+    <origin xyz="4.405355014946988e-07 0.025002647865472988 -0.058" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="0.00095" iyy="0.000922" izz="4.7e-05" ixy="-0.0" iyz="-0.0" ixz="-0.0"/>
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  </inertial>
+  <visual>
+    <origin xyz="-0.133593 -0.16059 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rb2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.133593 -0.16059 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rb2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="rf2">
+  <!-- <inertial>
+    <origin xyz="4.4053550166123223e-07 0.025002647865473154 -0.058" rpy="0 0 0"/>
+    <mass value="0.1"/> -->
+    <!-- <inertia ixx="0.00095" iyy="0.000922" izz="4.7e-05" ixy="-0.0" iyz="-0.0" ixz="-0.0"/> -->
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial> -->
+  <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="1.905177073602271e-07 -0.02550497548458827 -0.06999107230321813" rpy="0 0 0" />
+  <visual>
+    <origin xyz="0.111407 -0.16059 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rf2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.111407 -0.16059 -0.359825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rf2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lb3">
+  <!-- <inertial>
+    <origin xyz="1.905177073602271e-07 -0.02550497548458827 -0.06999107230321813" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="6.5e-05" iyy="6.3e-05" izz="6e-06" ixy="-0.0" iyz="-0.0" ixz="0.0"/> -->
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  <!-- </inertial> -->
+  <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="1.905177073602271e-07 -0.02550497548458827 -0.06999107230321813" rpy="0 0 0" />
+  <visual>
+    <origin xyz="-0.133593 0.16741 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lb3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.133593 0.16741 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lb3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="lf3">
+  <!-- <inertial>
+    <origin xyz="1.905177022532012e-07 -0.025504975484588632 -0.06999107230321808" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="6.5e-05" iyy="6.3e-05" izz="6e-06" ixy="-0.0" iyz="-0.0" ixz="0.0"/> -->
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  <!-- </inertial> -->
+  <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="1.905177022532012e-07 -0.025504975484588632 -0.06999107230321808" rpy="0 0 0" />
+  <visual>
+    <origin xyz="0.111407 0.16741 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lf3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.111407 0.16741 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/lf3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="rb3">
+  <!-- <inertial>
+    <origin xyz="7.100791705461074e-07 0.02550568497895228 -0.06999107230322818" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="6.5e-05" iyy="6.3e-05" izz="6e-06" ixy="-0.0" iyz="0.0" ixz="-0.0"/> -->
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  <!-- </inertial> -->
+  <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="7.100791705461074e-07 0.02550568497895228 -0.06999107230322818" rpy="0 0 0" />
+  <visual>
+    <origin xyz="-0.133593 -0.16059 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rb3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.133593 -0.16059 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rb3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="rf3">
+  <!-- <inertial>
+    <origin xyz="7.100791702685516e-07 0.025505684978952448 -0.06999107230322804" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="6.5e-05" iyy="6.3e-05" izz="6e-06" ixy="-0.0" iyz="0.0" ixz="-0.0"/> -->
+    <!-- <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/> -->
+  <!-- </inertial> -->
+  <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="7.100791702685516e-07 0.025505684978952448 -0.06999107230322804" rpy="0 0 0" />
+  <visual>
+    <origin xyz="0.111407 -0.16059 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rf3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.111407 -0.16059 -0.205825" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find quadruped_description)/meshes/rf3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<!-- <link name="leg_3_v1_1_fixed_ee"/> ise add krna hai for leg tip
+<joint name="Fixed_j" type="fixed">
+  <origin xyz="-0.125 0.025 0.0" rpy="1.57 0 3.14"/>
+  <parent link="link3_1"/>
+  <child link="leg_3_v1_1_fixed_ee"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint> --> 
+
+<!-- <joint name="virtual_joint" type="fixed">
+  <origin xyz="0.0 0.0 0.3" rpy="0.0 0.0 0.0"/>
+  <parent link="world"/>
+  <child link="base_link"/>
+</joint> -->
+
+<link name="leg_rb_tip">
+<visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu>0.6</mu>
+                        <mu2>0.6</mu2>
+                        <fdir1>1 0 0</fdir1>
+                    </ode>
+                </friction>
+            </surface>
+        </collision>
+</link>
+<link name="leg_rf_tip">
+<visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu>0.6</mu>
+                        <mu2>0.6</mu2>
+                        <fdir1>1 0 0</fdir1>
+                    </ode>
+                </friction>
+            </surface>
+        </collision>
+</link>
+<link name="leg_lb_tip">
+<visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu>0.6</mu>
+                        <mu2>0.6</mu2>
+                        <fdir1>1 0 0</fdir1>
+                    </ode>
+                </friction>
+            </surface>
+        </collision>
+</link>
+<link name="leg_lf_tip">
+<visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/> 
+            <geometry>
+                <sphere radius="0.016"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu>0.6</mu>
+                        <mu2>0.6</mu2>
+                        <fdir1>1 0 0</fdir1>
+                    </ode>
+                </friction>
+            </surface>
+        </collision>
+</link>
+
+<!-- <joint name="footprint_joint" type="fixed">
+  <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="base_footprint"/>
+</joint> -->
+
+<joint name="lb1_base" type="revolute">
+  <origin xyz="0.159093 -0.13841 0.359825" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="lb1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="lf1_base" type="revolute">
+  <origin xyz="-0.085907 -0.13841 0.359825" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="lf1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="rb1_base" type="revolute">
+  <origin xyz="0.159093 0.13159 0.359825" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="rb1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="rf1_base" type="revolute">
+  <origin xyz="-0.085907 0.13159 0.359825" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="rf1"/>
+  <axis xyz="-1.0 0.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="lb1_2" type="revolute">
+  <origin xyz="-0.0255 -0.029 0.0" rpy="0 0 0"/>
+  <parent link="lb1"/>
+  <child link="lb2"/>
+  <axis xyz="-0.0 -1.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="lf1_2" type="revolute">
+  <origin xyz="-0.0255 -0.029 0.0" rpy="0 0 0"/>
+  <parent link="lf1"/>
+  <child link="lf2"/>
+  <axis xyz="0.0 -1.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="rb1_2" type="revolute">
+  <origin xyz="-0.0255 0.029 0.0" rpy="0 0 0"/>
+  <parent link="rb1"/>
+  <child link="rb2"/>
+  <axis xyz="0.0 1.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="rf1_2" type="revolute">
+  <origin xyz="-0.0255 0.029 0.0" rpy="0 0 0"/>
+  <parent link="rf1"/>
+  <child link="rf2"/>
+  <axis xyz="-0.0 1.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="lb2_3" type="revolute">
+  <origin xyz="0.0 0.0 -0.154" rpy="0 0 0"/>
+  <parent link="lb2"/>
+  <child link="lb3"/>
+  <axis xyz="0.0 -1.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="lf2_3" type="revolute">
+  <origin xyz="0.0 0.0 -0.154" rpy="0 0 0"/>
+  <parent link="lf2"/>
+  <child link="lf3"/>
+  <axis xyz="0.0 -1.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="rb2_3" type="revolute">
+  <origin xyz="0.0 0.0 -0.154" rpy="0 0 0"/>
+  <parent link="rb2"/>
+  <child link="rb3"/>
+  <axis xyz="-0.0 1.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="rf2_3" type="revolute">
+  <origin xyz="0.0 0.0 -0.154" rpy="0 0 0"/>
+  <parent link="rf2"/>
+  <child link="rf3"/>
+  <axis xyz="-0.0 1.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Fixed_tip_rb" type="fixed">
+  <origin xyz="-0.0 0.025 -0.125" rpy="1.57 1.57 3.14"/>
+  <parent link="rb3"/>
+  <child link="leg_rb_tip"/>
+</joint>
+
+<joint name="Fixed_tip_rf" type="fixed">
+  <origin xyz="-0.0 0.025 -0.125" rpy="1.57 1.57 3.14"/>
+  <parent link="rf3"/>
+  <child link="leg_rf_tip"/>
+</joint>
+
+<joint name="Fixed_tip_lb" type="fixed">
+  <origin xyz="-0.0 -0.025 -0.125" rpy="1.57 1.57 0.0"/>
+  <parent link="lb3"/>
+  <child link="leg_lb_tip"/>
+</joint>
+
+<joint name="Fixed_tip_lf" type="fixed">
+  <origin xyz="-0.0 -0.025 -0.125" rpy="1.57 1.57 0.0"/>
+  <parent link="lf3"/>
+  <child link="leg_lf_tip"/>
+</joint>
+
+</robot>

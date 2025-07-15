@@ -1,0 +1,17 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # 100 Hz frequency
+    use_sim_time: true  # Use simulated time
+
+    # Define controllers to be loaded
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster  # Publishing joint states
+
+    simple_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController  # Type of the velocity controller
+
+simple_velocity_controller:
+  ros__parameters:
+    joints:
+      - wheel_left_joint  # Ensure these match the joint names in the URDF
+      - wheel_right_joint
