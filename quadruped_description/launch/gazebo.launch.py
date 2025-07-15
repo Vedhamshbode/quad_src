@@ -175,16 +175,16 @@ def generate_launch_description():
         ),
 
         # rf -> bridge
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=rf_cont_spawner,
-                on_exit=[TimerAction(period=1.0, actions=[bridge]),],
-            )
-        ),
-
+        # RegisterEventHandler(
+        #     event_handler=OnProcessExit(
+        #         target_action=rf_cont_spawner,
+        #         on_exit=[TimerAction(period=1.0, actions=[traj_node]),],
+        #     )
+        # ),
+        traj_node,
+        bridge,
         robot_state_publisher_node,
         gz_spawn_entity,
-        traj_node,
         # Delay fixed frame tf
         TimerAction(period=2.0, actions=[static_tf_node]),
         rviz2_node,

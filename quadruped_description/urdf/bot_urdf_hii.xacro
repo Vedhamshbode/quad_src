@@ -223,11 +223,11 @@
 
 <link name="lb3">
   <inertial>
-    <origin xyz="0.0 -0.0255 -0.070" rpy="0 0 0"/>
-    <mass     value="0.1"/>
-    <inertia  ixx="6.5e-05" iyy="6.3e-05" izz="6.0e-06"
-              ixy="0.0"     iyz="0.0"     ixz="0.0"/>
-  </inertial>
+  <origin xyz="0.0 -0.0255 -0.070" rpy="0 0 0"/>
+  <mass value="0.2"/>
+  <inertia ixx="0.00013" iyy="0.000126" izz="0.000012"
+           ixy="0.0" iyz="0.0" ixz="0.0"/>
+</inertial>
   <!-- <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="1.905177073602271e-07 -0.02550497548458827 -0.06999107230321813" rpy="0 0 0" /> -->
   <visual>
     <origin xyz="-0.133593 0.16741 -0.205825" rpy="0 0 0"/>
@@ -246,11 +246,11 @@
 
 <link name="lf3">
   <inertial>
-    <origin xyz="0.0 -0.0255 -0.070" rpy="0 0 0"/>
-    <mass     value="0.1"/>
-    <inertia  ixx="6.5e-05" iyy="6.3e-05" izz="6.0e-06"
-              ixy="0.0"     iyz="0.0"     ixz="0.0"/>
-  </inertial>
+  <origin xyz="0.0 -0.0255 -0.070" rpy="0 0 0"/>
+  <mass value="0.2"/>
+  <inertia ixx="0.00013" iyy="0.000126" izz="0.000012"
+           ixy="0.0" iyz="0.0" ixz="0.0"/>
+</inertial>
   <!-- <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="1.905177022532012e-07 -0.025504975484588632 -0.06999107230321808" rpy="0 0 0" /> -->
   <visual>
     <origin xyz="0.111407 0.16741 -0.205825" rpy="0 0 0"/>
@@ -268,12 +268,12 @@
 </link>
 
 <link name="rb3">
- <inertial>
-    <origin xyz="0.0  0.0255 -0.070" rpy="0 0 0"/> <!-- mirrored Y -->
-    <mass     value="0.1"/>
-    <inertia  ixx="6.5e-05" iyy="6.3e-05" izz="6.0e-06"
-              ixy="0.0"     iyz="0.0"     ixz="0.0"/>
-  </inertial>
+<inertial>
+  <origin xyz="0.0 -0.0255 -0.070" rpy="0 0 0"/>
+  <mass value="0.2"/>
+  <inertia ixx="0.00013" iyy="0.000126" izz="0.000012"
+           ixy="0.0" iyz="0.0" ixz="0.0"/>
+</inertial>
   <!-- <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="7.100791705461074e-07 0.02550568497895228 -0.06999107230322818" rpy="0 0 0" /> -->
   <visual>
     <origin xyz="-0.133593 -0.16059 -0.205825" rpy="0 0 0"/>
@@ -292,11 +292,11 @@
 
 <link name="rf3">
   <inertial>
-    <origin xyz="0.0  0.0255 -0.070" rpy="0 0 0"/> <!-- mirrored Y -->
-    <mass     value="0.1"/>
-    <inertia  ixx="6.5e-05" iyy="6.3e-05" izz="6.0e-06"
-              ixy="0.0"     iyz="0.0"     ixz="0.0"/>
-  </inertial>
+  <origin xyz="0.0 -0.0255 -0.070" rpy="0 0 0"/>
+  <mass value="0.2"/>
+  <inertia ixx="0.00013" iyy="0.000126" izz="0.000012"
+           ixy="0.0" iyz="0.0" ixz="0.0"/>
+</inertial>
   <!-- <xacro:box_inertia m="0.1" l="0.10" w="0.03" h="0.03" xyz="7.100791702685516e-07 0.025505684978952448 -0.06999107230322804" rpy="0 0 0" /> -->
   <visual>
     <origin xyz="0.111407 -0.16059 -0.205825" rpy="0 0 0"/>
