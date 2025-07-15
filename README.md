@@ -66,7 +66,7 @@ echo "source ~/gz_ros2_control_ws/install/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
 # Launch the demo
-ros2 launch quad_gz bringup.launch.py
+ros2 launch quadruped_description gazebo.launch.py
 ```
 
 ---
@@ -78,15 +78,15 @@ ros2 launch quad_gz bringup.launch.py
 Follow the official guide: [https://gazebosim.org/docs/harmonic/ros\_installation/#gazebo-harmonic-with-ros-2-humble-or-rolling-use-with-caution](https://gazebosim.org/docs/harmonic/ros_installation/#gazebo-harmonic-with-ros-2-humble-or-rolling-use-with-caution)
 
 ```bash
-sudo apt update && sudo apt install \
-  gz-harmonic \
-  ros-humble-ros-gz-bridge \
-  ros-humble-ros-gz-sim
-
-# Register Harmonic with rosdep
-wget -qO- https://raw.githubusercontent.com/gazebosim/sdformat/main/rosdep/gz-harmonic.yaml | \
-  sudo tee /etc/ros/rosdep/custom_rules/gz-harmonic.yaml
-rosdep update
+sudo apt-get update
+sudo apt-get install curl lsb-release gnupg
+#install gazebo harmonic
+sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+sudo apt-get update
+sudo apt-get install gz-harmonic
+#install the ros gazebo bridge
+sudo apt-get install ros-humble-ros-gzharmonic
 ```
 
 ### 2 — Build `gz_ros2_control` from source
@@ -115,17 +115,10 @@ See the **Quick Start** snippet or the official doc: [https://control.ros.org/h
 ```
 
 > Make sure the `filename` matches the library name produced in `install/lib` after building.
-
+## The below changes have already been done, its just for understanding and learning purposes! so please dont do these again!
 ### 4 — Prepare the Launch File (excerpt)
 
 ```python
-from launch import LaunchDescription
-from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, TimerAction
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.event_handlers import OnProcessExit
-from ament_index_python.packages import get_package_share_directory as FindPackageShare
-from launch.substitutions import PathJoinSubstitution
 
 gz_spawn_entity = Node(
     package='ros_gz_sim', executable='create', output='screen',
@@ -170,24 +163,8 @@ return LaunchDescription([
 ## Launching the Simulation
 
 ```bash
-ros2 launch quad_gz bringup.launch.py
+ros2 launch quadruped_description gazebo.launch.py
 ```
-
-* By default, the world is empty; pass your own SDF world via `gz_args`.
-* Use `rqt_joint_trajectory_controller` to command each leg.
-
----
-
-## Repository Layout
-
-```
-.
-├── quad_description/        # URDF / meshes / Xacro files
-├── quad_controllers/        # YAML configs for leg & joint controllers
-├── quad_gz/                 # Launch files and world assets
-└── README.md                # You are here
-```
-
 ---
 
 ## Troubleshooting
