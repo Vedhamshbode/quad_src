@@ -83,14 +83,14 @@ struct Joint_Pose
         //     std::chrono::seconds(1), std::bind(&TrajectoryPublisher::publish_trajectory, this));
 
         d = 0.08;
-        h = 0.03;
+        h = 0.02;
         theta = 0.0;  // Example angle in radians (45 degrees)
 
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
         // Eigen::Vector3d P3(0.15, -0.054, 0.03);
         // marker_pub(B, "dh_ref_lf");
        grounded_timer_ = this->create_wall_timer(
-        std::chrono::milliseconds(200),  // Check every 200 ms
+        std::chrono::seconds(1),  // Check every 200 ms
         [this]() {
             size_t rb_subs = joint_traj_pub_rb->get_subscription_count();
             size_t rf_subs = joint_traj_pub_rf->get_subscription_count();
@@ -728,9 +728,9 @@ struct Joint_Pose
     void teleop(std::vector<double> body_vel){
 
         RCLCPP_INFO(this->get_logger(), "teleop_called..");
-        // Eigen::Vector3d P3(0.025, -0.054, -0.25);
-        Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
-        Eigen::Vector3d P3l(0.06, -0.054, -0.23);
+        Eigen::Vector3d P3(0.025, -0.054, -0.25);
+        // Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
+        // Eigen::Vector3d P3l(0.06, -0.054, -0.23);
         std::vector<double> tip_vel = vel_ik(body_vel); //get tip velocities and directions {thetas!}
         //find max tip velocity!
         double max_vel = 0;
@@ -771,10 +771,10 @@ struct Joint_Pose
             d_lf = leg_bezier[0];
         }
 
-        B_rf = trajplanner(d_rf, h, tip_vel[4], P3r, beta_u, num_points);
-        B_rb = trajplanner(d_rb, h, tip_vel[5], P3r, beta_u, num_points);
-        B_lb = trajplanner(d_lb, h, tip_vel[6], P3l, beta_u, num_points);
-        B_lf = trajplanner(d_lf, h, tip_vel[7], P3l, beta_u, num_points);
+        B_rf = trajplanner(d_rf, h, tip_vel[4], P3, beta_u, num_points);
+        B_rb = trajplanner(d_rb, h, tip_vel[5], P3, beta_u, num_points);
+        B_lb = trajplanner(d_lb, h, tip_vel[6], P3, beta_u, num_points);
+        B_lf = trajplanner(d_lf, h, tip_vel[7], P3, beta_u, num_points);
 
         RCLCPP_INFO(this->get_logger(), "Frequency : %f ", leg_bezier[1]);
         T = 1/leg_bezier[1]; //time period from frequency!
@@ -1025,12 +1025,13 @@ struct Joint_Pose
         RCLCPP_INFO(this->get_logger(), "LB has %ld subs", joint_traj_pub_lb->get_subscription_count());
         RCLCPP_INFO(this->get_logger(), "LF has %ld subs", joint_traj_pub_lf->get_subscription_count());
 
-        Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
-        Eigen::Vector3d P3l(0.06, -0.054, -0.23);
+        // Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
+        // Eigen::Vector3d P3l(0.06, -0.054, -0.23);
+        Eigen::Vector3d P3(0.025, -0.054, -0.25);
 
 
-        std::vector<std::array<double, 3>> Pr = {{P3r[0], P3r[1], P3r[2]}}; 
-        std::vector<std::array<double, 3>> Pl = {{P3l[0], P3l[1], P3l[2]}}; 
+        std::vector<std::array<double, 3>> Pr = {{P3[0], P3[1], P3[2]}}; 
+        std::vector<std::array<double, 3>> Pl = {{P3[0], P3[1], P3[2]}}; 
 
         // std::vector<std::array<double, 3>> Pl = {{-P3[0], P3[1], P3[2]}}; 
 
@@ -1384,10 +1385,10 @@ private:
     // Member variables
     double l =0.26, c = 0.32;
     double num_points = 20;
-    double beta_u = 0.6;
+    double beta_u = 0.5;
     double T = 2.0;
     int cycles = 15;
-    double d, h, theta, cp_max=0.06, freq_max=1.66, freq_min=0.80; 
+    double d, h, theta, cp_max=0.085, freq_max=1.66, freq_min=0.60; 
     double max_v = 0.16, max_w = 0.15; //change the values
     int flag = 0;
     // Eigen::Vector3d P3(0.025, -0.054, -0.25);

@@ -170,8 +170,8 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action= rb_cont_spawner,
                 on_exit=[ 
-                    rf_cont_spawner,
-            ],
+                        rf_cont_spawner
+                    ]   
             )
         ),
         bridge,
