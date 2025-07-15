@@ -117,9 +117,9 @@ def generate_launch_description():
         arguments=["joint_broad"],
     )
 
-    ik_service_node = Node(
-        package="ik",
-        executable="ik_service",
+    traj_node = Node(
+        package="quadruped_description",
+        executable="traj_bezier",
         output = "screen"
     )
     bridge = Node(
@@ -178,12 +178,13 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=rf_cont_spawner,
-                on_exit=[TimerAction(period=1.0, actions=[bridge]),],
+                on_exit=[TimerAction(period=2.0, actions=[bridge]),],
             )
         ),
 
         robot_state_publisher_node,
         gz_spawn_entity,
+        traj_node,
         # Delay fixed frame tf
         TimerAction(period=2.0, actions=[static_tf_node]),
         rviz2_node,
