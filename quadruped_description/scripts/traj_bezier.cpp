@@ -83,7 +83,7 @@ struct Joint_Pose
         //     std::chrono::seconds(1), std::bind(&TrajectoryPublisher::publish_trajectory, this));
 
         d = 0.08;
-        h = 0.02;
+        h = 0.03;
         theta = 0.0;  // Example angle in radians (45 degrees)
 
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
@@ -773,7 +773,7 @@ struct Joint_Pose
 
         B_rf = trajplanner(d_rf, h, tip_vel[4], P3, beta_u, num_points);
         B_rb = trajplanner(d_rb, h, tip_vel[5], P3, beta_u, num_points);
-        B_lb = trajplanner(d_lb+0.005, h, tip_vel[6], P3, beta_u, num_points);
+        B_lb = trajplanner(d_lb, h, tip_vel[6], P3, beta_u, num_points);
         B_lf = trajplanner(d_lf, h, tip_vel[7], P3, beta_u, num_points);
 
         RCLCPP_INFO(this->get_logger(), "Frequency : %f ", leg_bezier[1]);
@@ -1388,7 +1388,7 @@ private:
     double beta_u = 0.5;
     double T = 2.0;
     int cycles = 15;
-    double d, h, theta, cp_max=0.085, freq_max=1.66, freq_min=0.60; 
+    double d, h, theta, cp_max=0.09, freq_max=1.66, freq_min=0.60; 
     double max_v = 0.16, max_w = 0.15; //change the values
     int flag = 0;
     // Eigen::Vector3d P3(0.025, -0.054, -0.25);

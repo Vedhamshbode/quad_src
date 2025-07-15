@@ -178,7 +178,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=rf_cont_spawner,
-                on_exit=[TimerAction(period=2.0, actions=[bridge]),],
+                on_exit=[TimerAction(period=1.0, actions=[bridge]),],
             )
         ),
 

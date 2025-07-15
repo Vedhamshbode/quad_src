@@ -24,8 +24,8 @@
 <link name="base_link">
 <inertial>
   <origin xyz="0 0 0" rpy="0 0 0"/>
-  <mass value="5.0"/>
-  <inertia ixx="0.02083" iyy="0.04167" izz="0.05417"
+  <mass value="2.0"/>
+  <inertia ixx="0.02303" iyy="0.02023" izz="0.03840"
            ixy="0.0" iyz="0.0" ixz="0.0"/>
 </inertial>
   <!-- <xacro:box_inertia m="2.0" l="0.10" w="0.244" h="0.27" xyz="0.0 0.0 0.0" rpy="0 0 0" /> -->
