@@ -89,7 +89,23 @@ struct Joint_Pose
         Eigen::Vector3d P3(0.025, -0.054, -0.25);
         // Eigen::Vector3d P3(0.15, -0.054, 0.03);
         // marker_pub(B, "dh_ref_lf");
-        grounded();
+       grounded_timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(200),  // Check every 200 ms
+        [this]() {
+            size_t rb_subs = joint_traj_pub_rb->get_subscription_count();
+            size_t rf_subs = joint_traj_pub_rf->get_subscription_count();
+            size_t lb_subs = joint_traj_pub_lb->get_subscription_count();
+            size_t lf_subs = joint_traj_pub_lf->get_subscription_count();
+
+            RCLCPP_INFO(this->get_logger(), "RB: %ld, RF: %ld, LB: %ld, LF: %ld", rb_subs, rf_subs, lb_subs, lf_subs);
+
+            if (rb_subs > 0 && rf_subs > 0 && lb_subs > 0 && lf_subs > 0) {
+            RCLCPP_INFO(this->get_logger(), "All leg controllers are ready. Calling grounded().");
+            grounded();
+            grounded_timer_->cancel();  // Stop the timer after first successful call
+            }
+        });
+
 
         // trot_gait(T, num_points, beta_u,cycles, d, h, theta);
         // grounded();
@@ -1004,6 +1020,10 @@ struct Joint_Pose
     void grounded(){
 
         is_initial = 0;
+        RCLCPP_INFO(this->get_logger(), "RB has %ld subs", joint_traj_pub_rb->get_subscription_count());
+        RCLCPP_INFO(this->get_logger(), "RF has %ld subs", joint_traj_pub_rf->get_subscription_count());
+        RCLCPP_INFO(this->get_logger(), "LB has %ld subs", joint_traj_pub_lb->get_subscription_count());
+        RCLCPP_INFO(this->get_logger(), "LF has %ld subs", joint_traj_pub_lf->get_subscription_count());
 
         Eigen::Vector3d P3r(-0.015, -0.054, -0.23);
         Eigen::Vector3d P3l(0.06, -0.054, -0.23);
@@ -1365,7 +1385,7 @@ private:
     double l =0.26, c = 0.32;
     double num_points = 20;
     double beta_u = 0.6;
-    double T = 1.0;
+    double T = 2.0;
     int cycles = 15;
     double d, h, theta, cp_max=0.06, freq_max=1.66, freq_min=0.80; 
     double max_v = 0.16, max_w = 0.15; //change the values
@@ -1387,6 +1407,7 @@ private:
 
     rclcpp::Client<custom_service::srv::IkSw>::SharedPtr client_;
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr grounded_timer_;
     size_t current_index;
     std::vector<std::array<double, 3>> B;
     std::vector<std::array<double, 3>> Br;

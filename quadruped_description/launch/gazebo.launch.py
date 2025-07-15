@@ -141,18 +141,37 @@ def generate_launch_description():
                 on_exit=[joint_broad_spawner],
             )
         ),
+        
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_broad_spawner,
-                on_exit=[ TimerAction(
-                period=1.0,  # delay in seconds
-                actions=[
+                on_exit=[
                     lb_cont_spawner,
-                    lf_cont_spawner,
-                    rb_cont_spawner,
-                    rf_cont_spawner
                 ]
-            )],
+            )
+        ),
+          RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action= lb_cont_spawner,
+                on_exit=[
+                    lf_cont_spawner,
+            ],
+            )
+        ),
+          RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action= lf_cont_spawner,
+                on_exit=[
+                    rb_cont_spawner,
+            ],
+            )
+        ),
+          RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action= rb_cont_spawner,
+                on_exit=[ 
+                    rf_cont_spawner,
+            ],
             )
         ),
         bridge,

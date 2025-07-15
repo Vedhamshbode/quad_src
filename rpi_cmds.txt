@@ -14,3 +14,34 @@ username - qpi
 1-> ssh qpi@10.50.15.145
 1-> ssh qpi@192.168.233.217
 1->
+
+#testing...
+# Right‑back leg
+ros2 topic pub --once /rb_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "
+joint_names: [rb1_base, rb1_2, rb2_3]
+points: [{positions: [0.4, -0.5, 1.0], time_from_start: {sec: 2}}]"
+
+# Left‑back leg
+ros2 topic pub --once /lb_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "
+joint_names: [lb1_base, lb1_2, lb2_3]
+points: [{positions: [0.4, -0.5, 1.0], time_from_start: {sec: 2}}]"
+
+# Left‑front leg
+ros2 topic pub --once /lf_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "
+joint_names: [lf1_base, lf1_2, lf2_3]
+points: [{positions: [0.3, -0.4, 0.9], time_from_start: {sec: 2}}]"
+
+# Right‑front leg
+ros2 topic pub --once /rf_cont/joint_trajectory trajectory_msgs/msg/JointTrajectory "
+joint_names: [rf1_base, rf1_2, rf2_3]
+points: [{positions: [0.3, -0.4, 0.9], time_from_start: {sec: 2}}]"
+
+ros2 topic pub -r 1 /cmd_vel geometry_msgs/msg/Twist "
+linear:
+  x: 0.08
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.0"
