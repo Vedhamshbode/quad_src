@@ -90,7 +90,7 @@ struct Joint_Pose
         // Eigen::Vector3d P3(0.15, -0.054, 0.03);
         // marker_pub(B, "dh_ref_lf");
        grounded_timer_ = this->create_wall_timer(
-        std::chrono::seconds(1),  // Check every 200 ms
+        std::chrono::seconds(2),  // Check every 200 ms
         [this]() {
             size_t rb_subs = joint_traj_pub_rb->get_subscription_count();
             size_t rf_subs = joint_traj_pub_rf->get_subscription_count();
@@ -773,7 +773,7 @@ struct Joint_Pose
 
         B_rf = trajplanner(d_rf, h, tip_vel[4], P3, beta_u, num_points);
         B_rb = trajplanner(d_rb, h, tip_vel[5], P3, beta_u, num_points);
-        B_lb = trajplanner(d_lb, h, tip_vel[6], P3, beta_u, num_points);
+        B_lb = trajplanner(d_lb+0.005, h, tip_vel[6], P3, beta_u, num_points);
         B_lf = trajplanner(d_lf, h, tip_vel[7], P3, beta_u, num_points);
 
         RCLCPP_INFO(this->get_logger(), "Frequency : %f ", leg_bezier[1]);

@@ -142,44 +142,49 @@ def generate_launch_description():
             )
         ),
         
+          # joint_broadcaster -> lb
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_broad_spawner,
-                on_exit=[
-                    lb_cont_spawner,
-                ]
+                on_exit=[lb_cont_spawner],
             )
         ),
-          RegisterEventHandler(
+
+        # lb -> lf
+        RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action= lb_cont_spawner,
-                on_exit=[
-                    lf_cont_spawner,
-            ],
+                target_action=lb_cont_spawner,
+                on_exit=[lf_cont_spawner],
             )
         ),
-          RegisterEventHandler(
+
+        # lf -> rb
+        RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action= lf_cont_spawner,
-                on_exit=[
-                    rb_cont_spawner,
-            ],
+                target_action=lf_cont_spawner,
+                on_exit=[rb_cont_spawner],
             )
         ),
-          RegisterEventHandler(
+
+        # rb -> rf (serial)
+        RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action= rb_cont_spawner,
-                on_exit=[ 
-                        rf_cont_spawner
-                    ]   
+                target_action=rb_cont_spawner,
+                on_exit=[rf_cont_spawner],
             )
         ),
-        bridge,
+
+        # rf -> bridge
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=rf_cont_spawner,
+                on_exit=[bridge],
+            )
+        ),
+
         robot_state_publisher_node,
         gz_spawn_entity,
         # Delay fixed frame tf
         TimerAction(period=2.0, actions=[static_tf_node]),
-
-        # Optional visualization
         rviz2_node,
     ])
